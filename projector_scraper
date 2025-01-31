@@ -1,0 +1,59 @@
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.chrome.service import Service
+from bs4 import BeautifulSoup
+import time
+import pandas as pd
+
+# Set up Selenium WebDriver (ensure you have the correct ChromeDriver installed)
+service = Service('path/to/chromedriver')  # Replace with your ChromeDriver path
+driver = webdriver.Chrome(service=service)
+
+# Open the website
+driver.get('https://theprojector.sg/')
+time.sleep(5)  # Wait for the page to load
+
+# Click on the date picker to select this weekend's dates
+# Replace with the actual selector for the date picker and desired dates
+date_picker = driver.find_element(By.CSS_SELECTOR, '.date-picker-selector')  # Example selector
+date_picker.click()
+time.sleep(2)
+
+# Click on the desired dates (e.g., Saturday and Sunday)
+# Replace with the actual selectors for the dates
+saturday = driver.find_element(By.CSS_SELECTOR, '.saturday-date')  # Example selector
+saturday.click()
+time.sleep(2)
+
+sunday = driver.find_element(By.CSS_SELECTOR, '.sunday-date')  # Example selector
+sunday.click()
+time.sleep(2)
+
+# Get the page source after selecting the dates
+page_source = driver.page_source
+driver.quit()
+
+# Parse the page source with BeautifulSoup
+soup = BeautifulSoup(page_source, 'html.parser')
+
+# Extract film titles and showtimes
+films = []
+showtimes = []
+
+# Replace with the actual selectors for film titles and showtimes
+for film in soup.select('.film-title'):  # Example selector
+    films.append(film.text.strip())
+
+for time_slot in soup.select('.showtime'):  # Example selector
+    showtimes.append(time_slot.text.strip())
+
+# Create a DataFrame to store the data
+data = pd.DataFrame({
+    'Film': films,
+    'Showtime': showtimes
+})
+
+# Save the data to a CSV file (optional)
+data.to_csv('weekend_showtimes.csv', index=False)
+
+print(data)
